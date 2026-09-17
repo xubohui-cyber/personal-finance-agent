@@ -1,7 +1,8 @@
-```python
 import json
 import urllib.request
 import xml.etree.ElementTree as ET
+import ssl
+import certifi
 from datetime import datetime, timezone
 
 RSS_URL = "https://news.google.com/rss/search?q=finance+OR+economy+OR+markets&hl=en-US&gl=US&ceid=US:en"
@@ -15,7 +16,15 @@ def fetch_news():
         headers={"User-Agent": "Mozilla/5.0"}
     )
 
-    with urllib.request.urlopen(request, timeout=20) as response:
+    ssl_context = ssl.create_default_context(
+        cafile=certifi.where()
+    )
+
+    with urllib.request.urlopen(
+        request,
+        timeout=20,
+        context=ssl_context
+    ) as response:
         data = response.read()
 
     root = ET.fromstring(data)
